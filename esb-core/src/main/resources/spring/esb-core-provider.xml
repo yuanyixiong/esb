@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+       http://code.alibabatech.com/schema/dubbo
+       http://code.alibabatech.com/schema/dubbo/dubbo.xsd
+       http://www.springframework.org/schema/context
+       https://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/task
+       http://www.springframework.org/schema/task/spring-task-4.0.xsd">
+
+    <context:property-placeholder location="classpath:dubbo.properties"/>
+
+    <context:component-scan base-package="com.sinoif.esbimpl.core"/>
+    <task:scheduler id="scheduler" pool-size="20"/>
+    <task:annotation-driven scheduler="scheduler" proxy-target-class="true" />
+
+
+    <dubbo:application name="esb-core"/>
+    <dubbo:registry protocol="zookeeper" address="${zookeeper.registry.address}"/>
+    <dubbo:protocol name="dubbo" port="-1" threadpool="cached"/>
+
+    <bean id="esbCoreRemoteService" class="com.sinoif.esbimpl.core.EsbCoreRemoteServiceImpl">
+        <property name="kafkaManager" ref="kafkaManager"/>
+    </bean>
+
+    <!--esb存储转发-->
+    <dubbo:service interface="com.sinoif.esb.core.service.EsbCoreRemoteService" ref="esbCoreRemoteService"
+                   group="${trade.dubbo.group}" version="${trade.dubbo.version}" timeout="5000"/>
+    <!-- access esb port service -->
+    <dubbo:reference id="esbPortalRemoteService" check="false" interface="com.sinoif.esb.port.service.EsbPortalRemoteService"
+                     timeout="10000" retries="0" group="${trade.dubbo.group}" version="${trade.dubbo.version}">
+<!--        <dubbo:method name="requestInterfaceRegister" async="true" onreturn="kafkaManager.esbServiceReady" validation=""/>-->
+    </dubbo:reference>
+    <!-- esb core beans -->
+    <bean id="kafkaManager" class="com.sinoif.esbimpl.core.kafka.KafkaManager">
+        <property name="esbPortalRemoteService" ref="esbPortalRemoteService"/>
+    </bean>
+
+    <bean id="coreHeartbeatRemoteResource" class="com.sinoif.esbimpl.core.resource.CoreHeartbeatRemoteResource"/>
+    <dubbo:service interface="com.sinoif.esb.core.remote.CoreHeartbeatRemoteService" ref="coreHeartbeatRemoteResource"
+                   group="${trade.dubbo.group}" version="${trade.dubbo.version}" timeout="5000"/>
+</beans>

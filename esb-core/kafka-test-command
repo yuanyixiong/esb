@@ -1,0 +1,9 @@
+kafka-console-consumer.sh  --bootstrap-server localhost:9092 --topic esb-branch-query --from-beginning
+
+kafka-console-consumer.sh  --bootstrap-server localhost:9092 --topic T_20191001104002 --from-beginning
+
+kafka-console-consumer.sh  --bootstrap-server localhost:9092 --topic esb-branch --from-beginning
+
+kafka-topics.sh --list --zookeeper zookeeper:2181
+
+kafka-console-consumer.sh  --bootstrap-server localhost:9092 --topic T_20190925152322 --from-beginning

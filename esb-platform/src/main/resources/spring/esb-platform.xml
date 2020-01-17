@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xmlns="http://www.springframework.org/schema/beans" xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+       http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:property-placeholder location="classpath:dubbo-${env}.properties"/>
+    <dubbo:application name="esb-platform"/>
+    <dubbo:registry protocol="zookeeper" address="${zookeeper.registry.address}"/>
+    <dubbo:protocol name="dubbo" port="2081" threadpool="cached"/>
+    <!-- access core provider service -->
+    <dubbo:reference id="esbPortalRemoteService" interface="com.sinoif.esb.port.service.EsbPortalRemoteService" timeout="30000"
+                     retries="0" group="${trade.dubbo.group}" version="${trade.dubbo.version}"
+                     check="false"/>
+
+    <dubbo:reference id="environmentRemoteService" interface="com.sinoif.esb.query.remote.EnvironmentRemoteService"
+                     timeout="30000"
+                     retries="0" group="${trade.dubbo.group}" version="${trade.dubbo.version}"
+                     check="false"/>
+
+    <dubbo:reference id="interfaceInvokeLogRemoteService"
+                     interface="com.sinoif.esb.query.remote.InterfaceInvokeLogRemoteService" timeout="30000"
+                     retries="0" group="${trade.dubbo.group}" version="${trade.dubbo.version}"
+                     check="false"/>
+
+    <dubbo:reference id="interfaceApproveInfoRemoteService" interface="com.sinoif.esb.query.remote.InterfaceApproveInfoRemoteService"
+                     timeout="30000"
+                     retries="0" group="${trade.dubbo.group}" version="${trade.dubbo.version}"
+                     check="false"/>
+
+    <dubbo:reference id="invokeLogHandler" interface="com.sinoif.esb.port.service.InterfaceLogRemoteHandler"
+                     group="${trade.dubbo.group}" version="${trade.dubbo.version}" retries="0"
+                     check="false"
+                     timeout="6000"/>
+
+    <dubbo:reference id="esbCoreRemoteService" check="false" interface="com.sinoif.esb.core.service.EsbCoreRemoteService"
+                     retries="0"
+                     group="${trade.dubbo.group}" version="${trade.dubbo.version}"/>
+
+    <dubbo:reference id="coreHeartbeatRemoteService" check="false" interface="com.sinoif.esb.core.remote.CoreHeartbeatRemoteService"
+                     retries="0"
+                     group="${trade.dubbo.group}" version="${trade.dubbo.version}"/>
+    <dubbo:reference id="portalHeartbeatRemoteService" check="false" interface="com.sinoif.esb.port.remote.PortalHeartbeatRemoteService"
+                     retries="0"
+                     group="${trade.dubbo.group}" version="${trade.dubbo.version}"/>
+    <dubbo:reference id="queryHeartbeatRemoteService" check="false" interface="com.sinoif.esb.query.remote.QueryHeartbeatRemoteService"
+                     retries="0"
+                     group="${trade.dubbo.group}" version="${trade.dubbo.version}"/>
+    <dubbo:reference id="indexStatisticsRemoteService" check="false" interface="com.sinoif.esb.query.remote.IndexStatisticsRemoteService"
+                     retries="0"
+                     group="${trade.dubbo.group}" version="${trade.dubbo.version}"/>
+
+    <bean id="platformService" class="com.sinoif.esbimpl.platform.PlatformServiceImpl"/>
+
+    <!--expose port service to other consumer-->
+    <dubbo:service interface="com.sinoif.esb.platform.PlatformService" ref="platformService"
+                   group="${trade.dubbo.group}"
+                   version="${trade.dubbo.version}"/>
+
+    <bean id="esbPortalEndpoint" class="com.sinoif.esbimpl.platform.EsbPortalEndpoint">
+        <property name="esbPortalRemoteService" ref="esbPortalRemoteService"/>
+    </bean>
+</beans>

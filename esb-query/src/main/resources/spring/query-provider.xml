@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+       http://code.alibabatech.com/schema/dubbo
+       http://code.alibabatech.com/schema/dubbo/dubbo.xsd
+       http://www.springframework.org/schema/context
+       https://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/task
+       http://www.springframework.org/schema/task/spring-task-4.0.xsd">
+    <context:property-placeholder location="classpath:dubbo.properties"/>
+
+    <context:component-scan base-package="com.sinoif.esb.query"/>
+    <task:scheduler id="scheduler" pool-size="20"/>
+    <task:annotation-driven scheduler="scheduler" proxy-target-class="true" />
+    <dubbo:application name="esb-query"/>
+    <dubbo:registry protocol="zookeeper" address="${zookeeper.registry.address}"/>
+    <dubbo:protocol name="dubbo" port="2099" threadpool="cached"/>
+
+    <bean id="esbQueryService" class="com.sinoif.esb.query.service.SimulateService">
+    </bean>
+
+    <bean id="environmentRemoteResource" class="com.sinoif.esb.query.resource.EnvironmentRemoteResource"/>
+    <bean id="interfaceInvokeLogRemoteResource" class="com.sinoif.esb.query.resource.InterfaceInvokeLogRemoteResource"/>
+    <bean id="interfaceApproveInfoService" class="com.sinoif.esb.query.service.impl.InterfaceApproveInfoServiceImpl"/>
+    <bean id="queryHeartbeatRemoteResource" class="com.sinoif.esb.query.resource.QueryHeartbeatRemoteResource"/>
+    <bean id="indexStatisticsRemoteResource" class="com.sinoif.esb.query.resource.IndexStatisticsRemoteResource"/>
+
+    <dubbo:service interface="com.sinoif.esb.query.remote.EnvironmentRemoteService" ref="environmentRemoteResource"
+                   group="${trade.dubbo.group}" version="${trade.dubbo.version}" timeout="5000"/>
+
+    <dubbo:service interface="com.sinoif.esb.query.remote.InterfaceInvokeLogRemoteService"
+                   ref="interfaceInvokeLogRemoteResource"
+                   group="${trade.dubbo.group}" version="${trade.dubbo.version}" timeout="5000"/>
+
+    <dubbo:service interface="com.sinoif.uiptrade.sdk.service.ConnectSetUpService" ref="esbQueryService"
+                   group="${trade.dubbo.group}" version="${trade.dubbo.version}" timeout="5000"/>
+
+    <dubbo:service interface="com.sinoif.uiptrade.sdk.service.WhitelistService" ref="esbQueryService"
+                   group="${trade.dubbo.group}" version="${trade.dubbo.version}" timeout="5000"/>
+
+    <dubbo:service interface="com.sinoif.esb.query.remote.InterfaceApproveInfoRemoteService" ref="interfaceApproveInfoService"
+                   group="${trade.dubbo.group}" version="${trade.dubbo.version}" timeout="5000"/>
+
+    <dubbo:service interface="com.sinoif.esb.query.remote.QueryHeartbeatRemoteService" ref="queryHeartbeatRemoteResource"
+                   group="${trade.dubbo.group}" version="${trade.dubbo.version}" timeout="5000"/>
+
+    <dubbo:service interface="com.sinoif.esb.query.remote.IndexStatisticsRemoteService" ref="indexStatisticsRemoteResource"
+                   group="${trade.dubbo.group}" version="${trade.dubbo.version}" timeout="5000"/>
+
+    <dubbo:reference id="esbPortalRemoteService" interface="com.sinoif.esb.port.service.EsbPortalRemoteService" timeout="30000"
+                     retries="0" group="${trade.dubbo.group}" version="${trade.dubbo.version}"
+                     check="false"/>
+
+</beans>

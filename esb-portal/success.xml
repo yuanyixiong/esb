@@ -1,0 +1,17 @@
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+    <soap:Header>
+        <ns0:Urc xmlns:ns0="http://ws.uap.nc/lang">
+            <ns0:datasource>design</ns0:datasource>
+            <ns0:userCode>#UAP#</ns0:userCode>
+            <ns0:langCode>simpchn</ns0:langCode>
+        </ns0:Urc>
+    </soap:Header>
+    <soap:Body>
+        <ns1:queryMdByConditionResponse xmlns:ns1="http://sharing.mdm07.itf.yonyou.com/IMdSharingCenterService">
+            <ns1:return xmlns:ns0="http://sharing.mdm07.itf.yonyou.com/MdmRetVO">
+                <ns0:data>{}</ns0:data>
+                <ns0:success>true</ns0:success>
+            </ns1:return>
+        </ns1:queryMdByConditionResponse>
+    </soap:Body>
+</soap:Envelope>

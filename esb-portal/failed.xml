@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+    <soap:Header>
+        <ns0:Urc xmlns:ns0="http://ws.uap.nc/lang">
+            <ns0:datasource>design</ns0:datasource>
+            <ns0:userCode>#UAP#</ns0:userCode>
+            <ns0:langCode>simpchn</ns0:langCode>
+        </ns0:Urc>
+    </soap:Header>
+    <soap:Body>
+        <ns1:queryMdByConditionResponse xmlns:ns1="http://sharing.mdm07.itf.yonyou.com/IMdSharingCenterService">
+            <ns1:return xmlns:ns0="http://sharing.mdm07.itf.yonyou.com/MdmRetVO">
+                <ns0:message>sql:select mp.md_code,mp.pk_outersysbusidata from uapmdm_relationmap mp where pk_outersystem = 'MDM' and pk_mdentity = '0001SS1000000000WYNL' and ORA-00936: 缺失表达式</ns0:message>
+                <ns0:success>false</ns0:success>
+            </ns1:return>
+        </ns1:queryMdByConditionResponse>
+    </soap:Body>
+</soap:Envelope>

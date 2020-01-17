@@ -1,0 +1,19 @@
+{
+  "appId": 0,
+  "appName": "mainDataPlatform",
+  "id": 10,
+  "keyProperty": "code",
+  "localPart": "IMdSharingCenterServiceSOAP11Binding",
+  "needApprove": false,
+  "protocol": "WEBSERVICE",
+  "protocolType": "HTTP",
+  "sendUrl": "uapws/service/com.yonyou.itf.mdm07.sharing.IMdSharingCenterService?wsdl",
+  "serverIp": "180.168.195.45",
+  "serverPort": 18080,
+  "targetNameSpace": "http://sharing.mdm07.itf.yonyou.com/IMdSharingCenterService",
+  "topic": "esb-branch-query",
+  "typeActive": "INITIATIVE",
+  "typeSync": "SYNC",
+  "typeTransfer": "INPUT",
+  "wsMethod": "urn:queryMdByCondition"
+}

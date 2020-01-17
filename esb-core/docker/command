@@ -1,0 +1,19 @@
+# list all topics in kafka
+$KAFKA_HOME/bin/kafka-topics.sh --list --zookeeper zookeeper:2181
+
+$KAFKA_HOME/bin/kafka-console-consumer.sh --topic sinkTopic --from-beginning --zookeeper zookeeper:2181
+
+
+$KAFKA_HOME/bin/kafka-console-consumer.sh --bootstrap-server \
+localhost:9092 --topic esb-branch \
+--from-beginning
+
+
+$KAFKA_HOME/bin/kafka-consumer-groups.sh  --list --bootstrap-server localhost:9092
+
+$KAFKA_HOME/bin/kafka-topics.sh --zookeeper zookeeper:2181 --delete --topic 'GoodsImportSource'
+
+
+$KAFKA_HOME/bin/kafka-consumer-groups.sh  -zookeeper zookeeper:2181 -list
+
+$KAFKA_HOME/bin/kafka-consumer-groups.sh  -bootstrap-server localhost:9092 -list

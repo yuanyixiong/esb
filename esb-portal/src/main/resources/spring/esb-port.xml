@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xmlns="http://www.springframework.org/schema/beans" xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+       http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+
+    <dubbo:application name="esb-port"/>
+    <context:property-placeholder location="classpath:dubbo.properties"/>
+    <!--    <dubbo:registry address="zookeeper://127.0.0.1:2181"/>-->
+    <dubbo:registry protocol="zookeeper" address="${zookeeper.registry.address}"/>
+    <dubbo:protocol name="dubbo" port="-1"/>
+
+    <!-- access core provider service -->
+    <dubbo:reference id="esbCoreRemoteService" check="false" interface="com.sinoif.esb.core.service.EsbCoreRemoteService"
+                     retries="0"
+                     group="${trade.dubbo.group}" version="${trade.dubbo.version}" timeout="50000"/>
+    <dubbo:reference id="platformService" check="false" interface="com.sinoif.esb.platform.PlatformService" retries="0"
+                     group="${trade.dubbo.refgroup}" version="${trade.dubbo.version}"
+                     timeout="660000"/>
+    <dubbo:reference id="connectionService" interface="com.sinoif.uiptrade.sdk.service.ConnectSetUpService"
+                     group="${trade.dubbo.refgroup}" version="${trade.dubbo.version}" retries="0"
+                     timeout="6000"/>
+    <dubbo:reference id="whiteListService" interface="com.sinoif.uiptrade.sdk.service.WhitelistService"
+                     group="${trade.dubbo.refgroup}" version="${trade.dubbo.version}" retries="0"
+                     timeout="6000"/>
+
+    <dubbo:reference id="interfaceApproveInfoRemoteService" interface="com.sinoif.esb.query.remote.InterfaceApproveInfoRemoteService"
+                     timeout="30000"
+                     retries="0" group="${trade.dubbo.group}" version="${trade.dubbo.version}"
+                     check="false"/>
+
+
+    <!-- beans definitions of esb port -->
+    <bean id="wsdlExtractor" class="com.sinoif.esbimpl.port.interfaces.WsdlExtractor"/>
+    <bean id="wsPortExecutor" class="com.sinoif.esbimpl.port.interfaces.WsPortExecutor"/>
+    <bean id="restApiExecutor" class="com.sinoif.esbimpl.port.interfaces.RestApiExecutor">
+        <!--        <property name="esbCoreRemoteService" ref="esbCoreRemoteService"/>-->
+    </bean>
+    <bean id="interfaceContext" class="com.sinoif.esbimpl.port.interfaces.InterfaceContext">
+        <property name="esbCoreRemoteService" ref="esbCoreRemoteService"/>
+    </bean>
+
+    <bean id="esbPortalRemoteService" class="com.sinoif.esbimpl.port.interfaces.EsbPortalService"/>
+
+    <bean id="invokeLogHandler" class="com.sinoif.esbimpl.port.service.InterfaceLogHandler">
+        <property name="interfaceContext" ref="interfaceContext"/>
+    </bean>
+
+    <!--expose port service to other consumer-->
+    <!--    <bean id="esbPortalRemoteService" class="com.sinoif.esbimpl.port.interfaces.EsbPortalService"/>-->
+    <dubbo:service interface="com.sinoif.esb.port.service.EsbPortalRemoteService" ref="esbPortalRemoteService" retries="0"
+                   group="${trade.dubbo.group}" version="${trade.dubbo.version}"/>
+
+    <dubbo:service interface="com.sinoif.esb.port.service.InterfaceLogRemoteHandler" ref="invokeLogHandler" retries="0"
+                   group="${trade.dubbo.group}" version="${trade.dubbo.version}"/>
+
+
+    <bean id="portalHeartbeatRemoteResopurce" class="com.sinoif.esbimpl.port.resource.PortalHeartbeatRemoteResopurce"/>
+
+    <dubbo:service interface="com.sinoif.esb.port.remote.PortalHeartbeatRemoteService" ref="portalHeartbeatRemoteResopurce" retries="0"
+                   group="${trade.dubbo.group}" version="${trade.dubbo.version}"/>
+
+</beans>

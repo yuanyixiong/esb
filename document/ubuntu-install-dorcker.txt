@@ -1,0 +1,111 @@
+先删除掉之前安装过的docker
+sudo apt-get remove docker docker-engine docker.io
+
+更新系统到最新
+sudo apt-get update
+
+安装软件包以允许通过HTTPS使用存储库： 这几个apt-transport-https ca-certificates curl software-properties-common 安装更新
+sudo apt-get install apt-transport-https ca-certificates curl software-properties-common
+
+添加Docker的官方GPG密钥：
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+
+通过搜索指纹的后8个字符，验证您现在是否拥有带有指纹9DC8 5822 9FC7 DD38 854A E2D8 8D81 803C 0EBF CD88的密钥。
+sudo apt-key fingerprint 0EBFCD88
+
+使用以下命令来设置稳定的存储库。
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+
+更新apt软件包索引
+sudo apt-get update
+
+安装最新版本的Docker CE，或转到下一步以安装特定版本。 替换所有现有的Docker安装。
+sudo apt-get install docker-ce
+
+
+在生产系统上，您应该安装特定版本的Docker CE，而不要始终使用最新版本。 该输出被截断： 列出可用的版本。
+	
+apt-cache madison docker-ce
+
+选择安装版本
+sudo apt-get install docker-ce=18.06.3~ce~3-0~ubuntu
+
+到这里安装完毕---------------------------------------------------------------
+
+
+测试：
+
+sudo docker run hello-world
+
+
+
+若未启动，则启动docker服务：
+$ sudo systemctl start docker
+
+或者重启 service docker restart
+
+
+
+构建docker镜像 . 不能少 表示当前路径
+docker build -t springbootdemo .
+
+启动镜像  80 docker提供给页面访问端口  8181应用程序的端口 ，例如部署的tomcat 端口
+docker run  -itd -p 80:8181 springbootdemo bash
+
+
+   5、docker命令使用
+
+    5.1 docker查看信息#docker info
+
+    5.2 docker查看镜像# docker images
+
+    5.3 docker 列出run的容器：#docker ps -a
+
+    5.4 pull docker镜像：#docker pull xxxxx
+
+    5.5 运行docker 容器
+
+        docker run xxxxx 
+
+        docker run -p 8080:80 --name 自定义名称 -it 镜像名称  /bin/bash
+
+    5.6 退出docker 容器但不停止运行：Ctrl+P+Q
+
+    5.7 停止docker 容器运行：#docker stop CONTAINERID
+
+    5.8 删除docker 容器#docker rm CONTAINERID
+
+    5.9 删除docker镜像：#docker rmi imageID
+
+    5.10 启动docker容器：#docker start CONTAINERID
+
+
+删除 docker 
+Uninstall Docker CE
+
+进入docker 内部  0b7a9dc884f0为 image
+docker exec -it 0b7a9dc884f0
+
+
+安装 docker compose
+
+sudo curl -L "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+
+要安装其他版本的Compose，请替换1.24.1 为要使用的Compose版本。
+
+将可执行权限应用于二进制文件：
+sudo chmod +x /usr/local/bin/docker-compose
+
+测试安装是否成功
+docker-compose --versionID
+
+--------本案中如何使用docker compose 启动所有镜像:
+
+第一种：首先拷贝 docker-compose.yml 到命令的执行目录  ,& 是后台启动 -d 后台启动 ，如果在同一目录可以不需要写yml文件进去
+docker-compose up &
+
+第二种：如果不拷贝需要执行执行那个docker-compose.ym ,-f docker-compose.yml 的意思是 指定名字，如果不是同一目录，需要加上目录地址例如 root 目录下： -if /root/docker-compose.yml
+
+docker-compose -f docker-compose.yml up &
+或者
+docker-compose -f docker-compose.yml up -d
